@@ -1,0 +1,39 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches: [ main, master ]
+    
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.x'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build
+      run: npm run build --if-present
+      
+    # 실제 배포 단계 (SSH를 통한 배포 예시)
+    # 실제 서버 정보로 수정 필요
+    - name: Deploy to server
+      if: success()
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          cd /path/to/deployment
+          git pull
+          npm ci
+          pm2 restart docker-manager || pm2 start server.js --name docker-manager
