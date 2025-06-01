@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>서버 포트 & 도커 관리</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>🚀 서버 포트 & 도커 관리</h1>
+                <div class="user-info">
+                    <span id="username-display"></span>
+                    <button class="btn btn-sm" onclick="logout()">로그아웃</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="openTab(event, 'ports')">포트 관리</button>
+            <button class="tab-button" onclick="openTab(event, 'docker')">도커 관리</button>
+            <button class="tab-button" onclick="openTab(event, 'compose')">컴포즈 관리</button>
+        </div>
+
+        <!-- 포트 관리 탭 -->
+        <div id="ports" class="tab-content active">
+            <div class="section">
+                <div class="section-header">
+                    <h2>현재 사용중인 포트</h2>
+                    <button class="btn btn-primary" onclick="loadPorts()">새로고침</button>
+                </div>
+                <div class="table-container">
+                    <table id="ports-table">
+                        <thead>
+                            <tr>
+                                <th>포트</th>
+                                <th>주소</th>
+                                <th>PID</th>
+                                <th>프로세스</th>
+                                <th>작업</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 도커 관리 탭 -->
+        <div id="docker" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>도커 컨테이너</h2>
+                    <div>
+                        <button class="btn btn-primary" onclick="loadContainers()">새로고침</button>
+                        <button class="btn btn-warning" onclick="dockerComposeDown()">Compose Down</button>
+                        <button class="btn btn-danger" onclick="dockerPrune()">시스템 정리</button>
+                    </div>
+                </div>
+                <div class="bulk-actions">
+                    <div class="checkbox-controls">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                            전체 선택
+                        </label>
+                        <span id="selectedCount">선택된 항목: 0개</span>
+                    </div>
+                    <div class="bulk-buttons">
+                        <button class="btn btn-success" onclick="bulkStartContainers()" disabled id="bulkStartBtn">선택 시작</button>
+                        <button class="btn btn-danger" onclick="bulkStopContainers()" disabled id="bulkStopBtn">선택 정지</button>
+                        <button class="btn btn-warning" onclick="bulkRemoveContainers()" disabled id="bulkRemoveBtn">선택 삭제</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="containers-table">
+                        <thead>
+                            <tr>
+                                <th>선택</th>
+                                <th>ID</th>
+                                <th>이미지</th>
+                                <th>상태</th>
+                                <th>포트</th>
+                                <th>이름</th>
+                                <th>작업</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2>도커 이미지</h2>
+                    <button class="btn btn-primary" onclick="loadImages()">새로고침</button>
+                </div>
+                <div class="table-container">
+                    <table id="images-table">
+                        <thead>
+                            <tr>
+                                <th>저장소</th>
+                                <th>태그</th>
+                                <th>ID</th>
+                                <th>생성일</th>
+                                <th>크기</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 도커 컴포즈 관리 탭 -->
+        <div id="compose" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <h2>도커 컴포즈 파일</h2>
+                </div>
+                <div id="compose-files-container" class="compose-files-container">
+                    <p>로딩중...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 알림 메시지 -->
+    <div id="notification" class="notification"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

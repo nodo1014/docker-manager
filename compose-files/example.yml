@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  # 예제 서비스
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./html:/usr/share/nginx/html
+    restart: unless-stopped
+
+  # 데이터베이스 예제
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_USER: example
+      POSTGRES_DB: example
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
